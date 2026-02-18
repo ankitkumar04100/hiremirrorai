@@ -33,7 +33,7 @@ HireMirror AI is an all-in-one AI-powered career readiness platform that analyze
 23. [Deployment & Hosting](#deployment--hosting)  
 24. [Demo & Screenshots](#demo--screenshots) 
 25. [References & Resources](#references--resources)  
-26. [License & Contact](#license--contact)  
+26. [Contact](#contact)  
 
 ---
 
