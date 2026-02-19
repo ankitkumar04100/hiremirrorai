@@ -1,8 +1,11 @@
 import Navbar from "@/components/Navbar";
 import { useState, useEffect } from "react";
-import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, AreaChart, Area } from "recharts";
-import { Brain, TrendingUp, Target, Award, Flame, Star, Clock, CheckCircle, ArrowRight, Zap, Trophy, BarChart3, Users, Lightbulb } from "lucide-react";
+import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
+import { Brain, Target, Flame, Zap, Trophy, Users, Lightbulb, ArrowRight, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+import { motion, useAnimation } from "framer-motion";
+import { useInView } from "framer-motion";
+import { useRef } from "react";
 
 const radarData = [
   { skill: "Technical", score: 78 },
@@ -45,27 +48,32 @@ const improvementTasks = [
   { task: "Complete React hooks quiz", priority: "Medium", done: true },
 ];
 
+/* ── Animated Gauge ── */
 function ReadinessGauge({ score }: { score: number }) {
   const [animScore, setAnimScore] = useState(0);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true });
+
   useEffect(() => {
+    if (!isInView) return;
     const timer = setTimeout(() => {
       let current = 0;
       const interval = setInterval(() => {
-        current += 2;
+        current += 1;
         setAnimScore(Math.min(current, score));
         if (current >= score) clearInterval(interval);
-      }, 20);
+      }, 18);
       return () => clearInterval(interval);
-    }, 300);
+    }, 400);
     return () => clearTimeout(timer);
-  }, [score]);
+  }, [score, isInView]);
 
   const circumference = 2 * Math.PI * 80;
   const strokeDashoffset = circumference - (animScore / 100) * circumference;
   const color = animScore >= 75 ? "#22d3ee" : animScore >= 50 ? "#3b82f6" : "#f59e0b";
 
   return (
-    <div className="relative flex items-center justify-center">
+    <div ref={ref} className="relative flex items-center justify-center">
       <svg width="200" height="200" className="-rotate-90">
         <circle cx="100" cy="100" r="80" fill="none" stroke="hsl(220 20% 12%)" strokeWidth="12" />
         <circle
@@ -74,11 +82,16 @@ function ReadinessGauge({ score }: { score: number }) {
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
-          style={{ transition: "stroke-dashoffset 0.1s ease", filter: `drop-shadow(0 0 8px ${color})` }}
+          style={{ transition: "stroke-dashoffset 0.05s linear", filter: `drop-shadow(0 0 8px ${color})` }}
         />
       </svg>
       <div className="absolute text-center">
-        <div className="font-display text-5xl font-extrabold gradient-text">{animScore}</div>
+        <motion.div
+          className="font-display text-5xl font-extrabold gradient-text"
+          key={animScore}
+        >
+          {animScore}
+        </motion.div>
         <div className="text-xs text-muted-foreground font-medium mt-1">Job Readiness</div>
         <div className="text-xs text-brand-green font-semibold mt-0.5">+7 this week</div>
       </div>
@@ -86,14 +99,51 @@ function ReadinessGauge({ score }: { score: number }) {
   );
 }
 
+/* ── Animated Skill Bar ── */
+function SkillBar({ label, val, color, delay }: { label: string; val: number; color: string; delay: number }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true });
+
+  return (
+    <div ref={ref} className="text-center">
+      <div className="text-xs text-muted-foreground mb-1">{label}</div>
+      <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+        <motion.div
+          className={`h-full ${color} rounded-full`}
+          initial={{ width: 0 }}
+          animate={isInView ? { width: `${val}%` } : { width: 0 }}
+          transition={{ duration: 1.2, delay, ease: "easeOut" }}
+        />
+      </div>
+      <div className="text-xs font-semibold text-foreground mt-1">{val}%</div>
+    </div>
+  );
+}
+
+/* ── Container variants ── */
+const container = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08 } },
+};
+
+const cardVariant = {
+  hidden: { opacity: 0, y: 28 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45 } },
+};
+
 export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="pt-20 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        
+
         {/* Header */}
-        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+        >
           <div>
             <h1 className="font-display text-3xl font-bold text-foreground">
               Welcome back, <span className="gradient-text">Ankit</span> 👋
@@ -110,52 +160,52 @@ export default function Dashboard() {
               Start Interview
             </Link>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Top KPI row */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        {/* KPI row */}
+        <motion.div
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6"
+        >
           {[
             { label: "Job Readiness", value: "79/100", change: "+7", icon: Target, color: "text-primary" },
             { label: "Interviews Done", value: "23", change: "+4", icon: Brain, color: "text-brand-cyan" },
             { label: "Badges Earned", value: "4/12", change: "+1", icon: Trophy, color: "text-brand-gold" },
             { label: "Rank", value: "#147", change: "↑23", icon: Users, color: "text-brand-green" },
           ].map((kpi) => (
-            <div key={kpi.label} className="glass-card rounded-xl p-4">
+            <motion.div key={kpi.label} variants={cardVariant} className="glass-card rounded-xl p-4">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs text-muted-foreground font-medium">{kpi.label}</span>
                 <kpi.icon className={`w-4 h-4 ${kpi.color}`} />
               </div>
               <div className="font-display text-2xl font-bold text-foreground">{kpi.value}</div>
               <div className="text-xs text-brand-green font-medium mt-1">{kpi.change} this week</div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Main grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          {/* Readiness Gauge */}
-          <div className="glass-card rounded-2xl p-6 flex flex-col items-center">
+        <motion.div
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6"
+        >
+          {/* Gauge */}
+          <motion.div variants={cardVariant} className="glass-card rounded-2xl p-6 flex flex-col items-center">
             <h3 className="font-display text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Overall Score</h3>
             <ReadinessGauge score={79} />
             <div className="mt-4 grid grid-cols-3 gap-2 w-full">
-              {[
-                { label: "Technical", val: 78, color: "bg-primary" },
-                { label: "Soft Skills", val: 70, color: "bg-brand-cyan" },
-                { label: "Behavioral", val: 65, color: "bg-brand-purple" },
-              ].map((d) => (
-                <div key={d.label} className="text-center">
-                  <div className="text-xs text-muted-foreground mb-1">{d.label}</div>
-                  <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                    <div className={`h-full ${d.color} rounded-full animate-progress`} style={{ width: `${d.val}%` }} />
-                  </div>
-                  <div className="text-xs font-semibold text-foreground mt-1">{d.val}%</div>
-                </div>
-              ))}
+              <SkillBar label="Technical" val={78} color="bg-primary" delay={0.2} />
+              <SkillBar label="Soft Skills" val={70} color="bg-brand-cyan" delay={0.4} />
+              <SkillBar label="Behavioral" val={65} color="bg-brand-purple" delay={0.6} />
             </div>
-          </div>
+          </motion.div>
 
-          {/* Radar Chart */}
-          <div className="glass-card rounded-2xl p-6">
+          {/* Radar */}
+          <motion.div variants={cardVariant} className="glass-card rounded-2xl p-6">
             <h3 className="font-display text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Skill Radar</h3>
             <ResponsiveContainer width="100%" height={220}>
               <RadarChart data={radarData}>
@@ -164,10 +214,10 @@ export default function Dashboard() {
                 <Radar name="Score" dataKey="score" stroke="hsl(217 100% 60%)" fill="hsl(217 100% 60%)" fillOpacity={0.15} strokeWidth={2} />
               </RadarChart>
             </ResponsiveContainer>
-          </div>
+          </motion.div>
 
-          {/* Progress Chart */}
-          <div className="glass-card rounded-2xl p-6">
+          {/* Area chart */}
+          <motion.div variants={cardVariant} className="glass-card rounded-2xl p-6">
             <h3 className="font-display text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Score Progress</h3>
             <ResponsiveContainer width="100%" height={220}>
               <AreaChart data={progressData}>
@@ -184,13 +234,18 @@ export default function Dashboard() {
                 <Area type="monotone" dataKey="score" stroke="hsl(217 100% 60%)" strokeWidth={2} fill="url(#scoreGrad)" />
               </AreaChart>
             </ResponsiveContainer>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Bottom grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <motion.div
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+        >
           {/* Recent Interviews */}
-          <div className="glass-card rounded-2xl p-6 lg:col-span-2">
+          <motion.div variants={cardVariant} className="glass-card rounded-2xl p-6 lg:col-span-2">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-display text-sm font-semibold text-muted-foreground uppercase tracking-wider">Recent Interviews</h3>
               <Link to="/interview" className="text-xs text-primary hover:underline flex items-center gap-1">
@@ -198,8 +253,14 @@ export default function Dashboard() {
               </Link>
             </div>
             <div className="space-y-3">
-              {recentInterviews.map((interview) => (
-                <div key={interview.role} className="flex items-center justify-between p-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors">
+              {recentInterviews.map((interview, i) => (
+                <motion.div
+                  key={interview.role}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 + i * 0.1, duration: 0.4 }}
+                  className="flex items-center justify-between p-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors"
+                >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center text-primary-foreground text-xs font-bold">
                       {interview.company[0]}
@@ -217,20 +278,26 @@ export default function Dashboard() {
                       {interview.score}
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
-          </div>
+          </motion.div>
 
-          {/* Improvement Plan */}
-          <div className="glass-card rounded-2xl p-6">
+          {/* AI Action Plan */}
+          <motion.div variants={cardVariant} className="glass-card rounded-2xl p-6">
             <div className="flex items-center gap-2 mb-4">
               <Lightbulb className="w-4 h-4 text-brand-gold" />
               <h3 className="font-display text-sm font-semibold text-muted-foreground uppercase tracking-wider">AI Action Plan</h3>
             </div>
             <div className="space-y-3">
-              {improvementTasks.map((task) => (
-                <div key={task.task} className={`flex items-start gap-3 p-3 rounded-lg ${task.done ? "opacity-50" : ""}`}>
+              {improvementTasks.map((task, i) => (
+                <motion.div
+                  key={task.task}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.35 + i * 0.08, duration: 0.4 }}
+                  className={`flex items-start gap-3 p-3 rounded-lg ${task.done ? "opacity-50" : ""}`}
+                >
                   <CheckCircle className={`w-4 h-4 mt-0.5 flex-shrink-0 ${task.done ? "text-brand-green" : "text-muted"}`} />
                   <div className="flex-1">
                     <div className={`text-sm ${task.done ? "line-through text-muted-foreground" : "text-foreground"}`}>{task.task}</div>
@@ -238,26 +305,35 @@ export default function Dashboard() {
                       {task.priority}
                     </span>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
             <Link to="/skills" className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-primary/30 text-primary text-sm font-medium hover:bg-primary/10 transition-colors">
               View Full Roadmap <ArrowRight className="w-4 h-4" />
             </Link>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Badges */}
-        <div className="glass-card rounded-2xl p-6 mt-6">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.5 }}
+          className="glass-card rounded-2xl p-6 mt-6"
+        >
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-display text-sm font-semibold text-muted-foreground uppercase tracking-wider">Achievements</h3>
             <Link to="/gamification" className="text-xs text-primary hover:underline">View all</Link>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-            {badges.map((badge) => (
-              <div
+            {badges.map((badge, i) => (
+              <motion.div
                 key={badge.name}
-                className={`text-center p-3 rounded-xl transition-all ${
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.65 + i * 0.07, type: "spring", stiffness: 200 }}
+                whileHover={{ scale: 1.07, y: -2 }}
+                className={`text-center p-3 rounded-xl transition-all cursor-default ${
                   badge.earned
                     ? "bg-gradient-to-br from-brand-gold/15 to-yellow-600/5 border border-brand-gold/30 glow-gold"
                     : "bg-muted/20 border border-muted/20 opacity-40 grayscale"
@@ -265,10 +341,10 @@ export default function Dashboard() {
               >
                 <div className="text-2xl mb-1">{badge.icon}</div>
                 <div className="text-xs font-semibold text-foreground leading-tight">{badge.name}</div>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
