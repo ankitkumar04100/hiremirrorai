@@ -10,6 +10,7 @@ import ResumeAnalysis from "./pages/ResumeAnalysis";
 import Skills from "./pages/Skills";
 import Gamification from "./pages/Gamification";
 import NotFound from "./pages/NotFound";
+import AIMentor from "./components/AIMentor";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/gamification" element={<Gamification />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <AIMentor />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
