@@ -87,7 +87,23 @@ Do not include any markdown, explanation, or extra text. Return pure JSON only.`
 
     // Parse the JSON response from AI — strip potential markdown code fences
     const cleaned = content.replace(/```json?\n?/gi, "").replace(/```/g, "").trim();
-    const parsed = JSON.parse(cleaned);
+    
+    if (!cleaned) {
+      throw new Error("AI returned empty response");
+    }
+
+    let parsed;
+    try {
+      parsed = JSON.parse(cleaned);
+    } catch {
+      // If JSON parsing fails, try to extract JSON from the response
+      const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        parsed = JSON.parse(jsonMatch[0]);
+      } else {
+        throw new Error("AI response was not valid JSON: " + cleaned.substring(0, 200));
+      }
+    }
 
     return new Response(JSON.stringify(parsed), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
