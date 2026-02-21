@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -6,11 +7,60 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const MessageSchema = z.object({
+  role: z.enum(["user", "assistant", "system"]),
+  content: z.string().min(1).max(4000),
+});
+
+const UserContextSchema = z.object({
+  name: z.string().max(100).optional(),
+  targetRole: z.string().max(100).optional(),
+  readinessScore: z.number().min(0).max(100).optional(),
+  streak: z.number().min(0).optional(),
+  interviewsDone: z.number().min(0).optional(),
+  rank: z.number().min(0).optional(),
+  technicalScore: z.number().min(0).max(100).optional(),
+  communicationScore: z.number().min(0).max(100).optional(),
+  problemSolvingScore: z.number().min(0).max(100).optional(),
+  softSkillsScore: z.number().min(0).max(100).optional(),
+  leadershipScore: z.number().min(0).max(100).optional(),
+  domainScore: z.number().min(0).max(100).optional(),
+  atsScore: z.number().min(0).max(100).optional(),
+  missingKeywords: z.array(z.string().max(50)).max(20).optional(),
+  strongAreas: z.array(z.string().max(50)).max(20).optional(),
+  lastInterviewScore: z.number().min(0).max(100).optional(),
+  behavioralScore: z.number().min(0).max(100).optional(),
+  weakestArea: z.string().max(200).optional(),
+  strongestArea: z.string().max(200).optional(),
+  badges: z.array(z.string().max(50)).max(50).optional(),
+}).optional();
+
+const RequestSchema = z.object({
+  messages: z.array(MessageSchema).min(1).max(50),
+  userContext: UserContextSchema,
+});
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { messages, userContext } = await req.json();
+    // Limit request body size (100KB)
+    const contentLength = req.headers.get("content-length");
+    if (contentLength && parseInt(contentLength) > 100_000) {
+      return new Response(JSON.stringify({ error: "Request too large" }), {
+        status: 413, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const body = await req.json();
+    const validation = RequestSchema.safeParse(body);
+    if (!validation.success) {
+      return new Response(JSON.stringify({ error: "Invalid request", details: validation.error.issues.map(i => i.message) }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const { messages, userContext } = validation.data;
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -18,34 +68,34 @@ serve(async (req) => {
     const systemPrompt = `You are HireMirror AI Career Mentor — a deeply personalized, context-aware career coach. You are NOT generic ChatGPT. You have full access to the user's career data and must reference it in every response.
 
 ## USER CONTEXT DATA
-- Name: ${userContext?.name || "Ankit"}
-- Target Role: ${userContext?.targetRole || "Frontend Engineer"}
-- Current Readiness Score: ${userContext?.readinessScore || 79}/100
-- Streak: ${userContext?.streak || 12} days
-- Interviews Completed: ${userContext?.interviewsDone || 23}
-- Rank: #${userContext?.rank || 147}
+- Name: ${userContext?.name || "User"}
+- Target Role: ${userContext?.targetRole || "Software Engineer"}
+- Current Readiness Score: ${userContext?.readinessScore ?? "N/A"}/100
+- Streak: ${userContext?.streak ?? 0} days
+- Interviews Completed: ${userContext?.interviewsDone ?? 0}
+- Rank: #${userContext?.rank ?? "N/A"}
 
 ### Skills Breakdown
-- Technical Skills: ${userContext?.technicalScore || 78}%
-- Communication: ${userContext?.communicationScore || 65}%
-- Problem Solving: ${userContext?.problemSolvingScore || 82}%
-- Soft Skills: ${userContext?.softSkillsScore || 70}%
-- Leadership: ${userContext?.leadershipScore || 55}%
-- Domain Knowledge: ${userContext?.domainScore || 85}%
+- Technical Skills: ${userContext?.technicalScore ?? "N/A"}%
+- Communication: ${userContext?.communicationScore ?? "N/A"}%
+- Problem Solving: ${userContext?.problemSolvingScore ?? "N/A"}%
+- Soft Skills: ${userContext?.softSkillsScore ?? "N/A"}%
+- Leadership: ${userContext?.leadershipScore ?? "N/A"}%
+- Domain Knowledge: ${userContext?.domainScore ?? "N/A"}%
 
 ### Resume Insights
-- ATS Score: ${userContext?.atsScore || 72}/100
-- Missing Keywords: ${(userContext?.missingKeywords || ["TypeScript", "GraphQL", "CI/CD", "Agile"]).join(", ")}
-- Strong Areas: ${(userContext?.strongAreas || ["React", "JavaScript", "Problem Solving"]).join(", ")}
+- ATS Score: ${userContext?.atsScore ?? "N/A"}/100
+- Missing Keywords: ${(userContext?.missingKeywords || []).join(", ") || "N/A"}
+- Strong Areas: ${(userContext?.strongAreas || []).join(", ") || "N/A"}
 
 ### Recent Interview Performance
-- Last Interview Score: ${userContext?.lastInterviewScore || 82}
-- Behavioral Score: ${userContext?.behavioralScore || 65}
-- Weakest Area: ${userContext?.weakestArea || "Communication & Soft Skills"}
-- Strongest Area: ${userContext?.strongestArea || "Domain Knowledge"}
+- Last Interview Score: ${userContext?.lastInterviewScore ?? "N/A"}
+- Behavioral Score: ${userContext?.behavioralScore ?? "N/A"}
+- Weakest Area: ${userContext?.weakestArea || "N/A"}
+- Strongest Area: ${userContext?.strongestArea || "N/A"}
 
 ### Badges Earned
-${(userContext?.badges || ["First Interview", "7-Day Streak", "Resume Pro", "Quick Thinker"]).join(", ")}
+${(userContext?.badges || []).join(", ") || "None yet"}
 
 ## YOUR BEHAVIOR RULES
 1. ALWAYS reference the user's actual data in your responses — never give generic advice.
@@ -105,7 +155,7 @@ When giving structured advice, use this format:
     });
   } catch (e) {
     console.error("mentor-chat error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
+    return new Response(JSON.stringify({ error: "Something went wrong. Please try again." }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
