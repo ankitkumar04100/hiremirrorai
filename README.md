@@ -4,6 +4,8 @@
 
 HireMirror AI is an all-in-one AI-powered career readiness platform that analyzes resumes, portfolios, and skills, conducts adaptive video mock interviews, evaluates technical and soft skills, provides personalized feedback and improvement plans, and tracks progress—empowering candidates to confidently land their dream jobs.
 
+[HireMirror Demo App](https://hiremirrorai.lovable.app)
+
 ---
 
 ## Table of Contents
