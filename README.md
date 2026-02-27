@@ -927,25 +927,8 @@ HireMirror AI is deployed using a **robust, scalable, and secure architecture** 
 
 ## Demo & Screenshots
 
-### Dashboard
-![Dashboard Screenshot](screenshots/dashboard.png)
-- Tracks **Job Readiness Scores**, skill gaps, and achievements.  
-- Visualizes **strengths and areas for improvement** with charts and progress bars.
-
-### Mock Interviews
-![Mock Interview Screenshot](screenshots/mock_interview.png)
-- AI-generated **adaptive questions** based on resume and skill analysis.  
-- Records **video and audio responses** for detailed evaluation.  
-
-### Feedback
-![Feedback Screenshot](screenshots/feedback.png)
-- Multi-dimensional feedback: **technical, soft skills, and behavioral scoring**.  
-- Provides **model answers, written suggestions, and actionable improvement steps**.
-
-### Gamification
-![Gamification Screenshot](screenshots/gamification.png)
-- Includes **badges, streaks, points, and leaderboards**.  
-- Encourages **daily engagement, friendly competition, and consistent skill growth**.
+### Demo App
+- [HireMirror Demo App](https://hiremirrorai.lovable.app)
 
 ### Demo Video
 - [Watch the 3-minute demo](https://youtu.be/demo_video_link) showing full platform functionality.
