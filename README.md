@@ -945,7 +945,7 @@ HireMirror AI is deployed using a **robust, scalable, and secure architecture** 
 
 - <img width="1920" height="875" alt="Screenshot (165)" src="https://github.com/user-attachments/assets/baea517c-edb4-4bf0-92c6-405c9a033659" />
 
-- <img width="1920" height="875" alt="Screenshot (165)" src="https://github.com/user-attachments/assets/3dec1554-4679-44a2-bd18-85e24ce87716" />
+- <img width="1920" height="862" alt="Screenshot (166)" src="https://github.com/user-attachments/assets/72ce879a-5a5e-47dc-8690-8a8b18ca1aee" />
 
 - <img width="1920" height="853" alt="Screenshot (168)" src="https://github.com/user-attachments/assets/db995c36-36b8-424a-8f0a-5b7dd6eb4936" />
 
