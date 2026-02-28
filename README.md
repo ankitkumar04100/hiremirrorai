@@ -932,7 +932,34 @@ HireMirror AI is deployed using a **robust, scalable, and secure architecture** 
 - [Watch the 3-minute demo](https://youtu.be/Eotls8QwThw) showing full platform functionality.
 
 ### Screenshots
-- 
+
+- <img width="1920" height="873" alt="Screenshot (160)" src="https://github.com/user-attachments/assets/b4ff1198-2e2a-451d-911a-a1327947ed55" />
+
+- <img width="1920" height="861" alt="Screenshot (176)" src="https://github.com/user-attachments/assets/bbdadabe-9cee-4845-9801-257676c2d484" />
+
+- <img width="1920" height="855" alt="Screenshot (163)" src="https://github.com/user-attachments/assets/4793187a-56be-45dc-8fb8-4246d7a23892" />
+
+- <img width="1920" height="858" alt="Screenshot (164)" src="https://github.com/user-attachments/assets/e9d02357-d88a-440e-aa5f-5ff163d3ccb1" />
+
+- <img width="1920" height="863" alt="Screenshot (178)" src="https://github.com/user-attachments/assets/deccd0e0-42d9-4f7a-9864-13eff95a4269" />
+
+- <img width="1920" height="875" alt="Screenshot (165)" src="https://github.com/user-attachments/assets/baea517c-edb4-4bf0-92c6-405c9a033659" />
+
+- <img width="1920" height="875" alt="Screenshot (165)" src="https://github.com/user-attachments/assets/3dec1554-4679-44a2-bd18-85e24ce87716" />
+
+- <img width="1920" height="853" alt="Screenshot (168)" src="https://github.com/user-attachments/assets/db995c36-36b8-424a-8f0a-5b7dd6eb4936" />
+
+- <img width="1920" height="856" alt="Screenshot (169)" src="https://github.com/user-attachments/assets/a573aee3-0f09-4c5a-b19a-19a9f6bf732f" />
+
+- <img width="1920" height="861" alt="Screenshot (170)" src="https://github.com/user-attachments/assets/7e56907f-88f3-4121-925f-fa3c024b8827" />
+
+- <img width="1920" height="864" alt="Screenshot (171)" src="https://github.com/user-attachments/assets/be5c49b4-2aa6-47b6-b076-501a6db1d382" />
+
+- <img width="1920" height="857" alt="Screenshot (172)" src="https://github.com/user-attachments/assets/0d7cb8df-a610-4dbe-8582-827d6ce8ecb9" />
+
+- <img width="1920" height="864" alt="Screenshot (173)" src="https://github.com/user-attachments/assets/5de95bc0-0dc5-4de1-930c-279950ca82d0" />
+
+- <img width="1920" height="852" alt="Screenshot (174)" src="https://github.com/user-attachments/assets/f36ad240-c991-4803-a641-8c1bc0fec38b" />
 
 ---
 
