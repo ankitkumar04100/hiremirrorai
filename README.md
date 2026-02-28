@@ -6,6 +6,8 @@ HireMirror AI is an all-in-one AI-powered career readiness platform that analyze
 
 [HireMirror Demo App](https://hiremirrorai.lovable.app)
 
+[Watch the 3-minute demo](https://youtu.be/Eotls8QwThw) showing full platform functionality.
+
 ---
 
 ## Table of Contents
@@ -481,10 +483,6 @@ HireMirror AI’s UI/UX is designed to provide **intuitive, engaging, and access
 3. Progress tracked on dashboard → improvement plan displayed  
 4. Gamification & mentorship features encourage continuous skill growth  
 
-### **Visual Mockups**
-
-<img width="1536" height="1024" alt="Designer (39)" src="https://github.com/user-attachments/assets/6bfbaf6c-a5bc-4313-ad27-32bdf420a564" />
-
 ---
 
 ## Accessibility Considerations
@@ -931,7 +929,10 @@ HireMirror AI is deployed using a **robust, scalable, and secure architecture** 
 - [HireMirror Demo App](https://hiremirrorai.lovable.app)
 
 ### Demo Video
-- [Watch the 3-minute demo](https://youtu.be/demo_video_link) showing full platform functionality.
+- [Watch the 3-minute demo](https://youtu.be/Eotls8QwThw) showing full platform functionality.
+
+### Screenshots
+- 
 
 ---
 
